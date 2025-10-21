@@ -126,18 +126,46 @@ forge test --fuzz-runs 10000
 
 ### Deploy
 
+#### CREATE2 Deployment (Same Address on All Chains) ⭐
+
+```bash
+# 1. Predict the address first (optional)
+forge script script/DeployCreate2.s.sol:PredictDelphAIAddress
+
+# 2. Deploy to BSC Testnet
+forge script script/DeployCreate2.s.sol:DeployDelphAICreate2 \
+  --rpc-url $BSC_TESTNET_RPC_URL \
+  --broadcast \
+  --verify \
+  --etherscan-api-key $BSCSCAN_API_KEY
+
+# 3. Deploy to BSC Mainnet (SAME ADDRESS!)
+forge script script/DeployCreate2.s.sol:DeployDelphAICreate2 \
+  --rpc-url $BSC_RPC_URL \
+  --broadcast \
+  --verify \
+  --etherscan-api-key $BSCSCAN_API_KEY
+```
+
+**Benefits of CREATE2:**
+- ✅ Same contract address across all chains
+- ✅ Predictable address before deployment
+- ✅ Easy multi-chain integration
+
+#### Standard Deployment
+
 ```bash
 # Local deployment (Anvil)
 forge script script/Deploy.s.sol:DeployDelphAILocal --fork-url http://localhost:8545 --broadcast
 
-# BSC Testnet deployment
+# BSC Testnet
 forge script script/Deploy.s.sol:DeployDelphAI \
   --rpc-url $BSC_TESTNET_RPC_URL \
   --broadcast \
   --verify \
   --etherscan-api-key $BSCSCAN_API_KEY
 
-# BSC Mainnet deployment
+# BSC Mainnet
 forge script script/Deploy.s.sol:DeployDelphAI \
   --rpc-url $BSC_RPC_URL \
   --broadcast \
