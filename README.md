@@ -263,8 +263,8 @@ Contributions are welcome! Please open an issue or PR.
 
 ## 📞 Contact
 
-- Twitter: [@delphai](https://twitter.com/delphai)
-- Discord: [Join our server](https://discord.gg/delphai)
+- Twitter: [@delphai_io](https://twitter.com/delphai_io)
+- Website: [delphai.io](https://delphai.io)
 
 ---
 
