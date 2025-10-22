@@ -51,6 +51,8 @@ library MarketLib {
      * @param status Current market status
      * @param outcomeIndex Index of the resolved outcome in possibleOutcomes array (type(uint256).max if not resolved)
      * @param resolutionData AI-generated resolution explanation/proof
+     * @param resolutionSources Array of source URLs used for resolution
+     * @param resolutionConfidence Confidence level of the resolution (0-100)
      * @param proofData TEE attestation or cryptographic proof of AI execution (for future verification)
      * @param resolvedAt Timestamp when market was resolved
      * @param resolvedBy Address that resolved the market
@@ -66,6 +68,8 @@ library MarketLib {
         MarketStatus status;
         uint256 outcomeIndex;
         string resolutionData;
+        string[] resolutionSources;
+        uint8 resolutionConfidence;
         bytes proofData;
         uint256 resolvedAt;
         address resolvedBy;

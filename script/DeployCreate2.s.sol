@@ -15,7 +15,10 @@ contract DeployDelphAICreate2 is Script {
     uint256 constant DEFAULT_CREATION_FEE = 0.001 ether;
 
     /// @notice Salt for CREATE2 (change this to get different addresses)
-    bytes32 constant SALT = keccak256("DelphAI-v1.0.0");
+    bytes32 constant SALT = keccak256("DelphAI-v1.1.0");
+
+    /// @notice Foundry's Create2Deployer address (same on all chains)
+    address constant CREATE2_DEPLOYER = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
 
     function run() external returns (DelphAI, address) {
         // Load environment variables
@@ -24,26 +27,24 @@ contract DeployDelphAICreate2 is Script {
         address resolver = vm.envOr("RESOLVER_ADDRESS", vm.addr(deployerPrivateKey));
         uint256 creationFee = vm.envOr("CREATION_FEE", DEFAULT_CREATION_FEE);
 
-        address deployer = vm.addr(deployerPrivateKey);
-
         console2.log("========================================");
         console2.log("DelphAI CREATE2 Deployment");
         console2.log("========================================");
-        console2.log("Deployer:", deployer);
         console2.log("Owner:", owner);
         console2.log("Resolver:", resolver);
         console2.log("Creation Fee:", creationFee);
         console2.log("Salt:", vm.toString(SALT));
 
-        // Predict the address before deployment
+        // Predict the address before deployment (using Create2Deployer)
         bytes32 initCodeHash = keccak256(abi.encodePacked(
             type(DelphAI).creationCode,
             abi.encode(owner, resolver, creationFee)
         ));
 
-        address predictedAddress = computeCreate2Address(SALT, initCodeHash, deployer);
+        address predictedAddress = computeCreate2Address(SALT, initCodeHash, CREATE2_DEPLOYER);
 
         console2.log("Predicted Address:", predictedAddress);
+        console2.log("Create2Deployer:", CREATE2_DEPLOYER);
         console2.log("========================================");
 
         vm.startBroadcast(deployerPrivateKey);
@@ -56,6 +57,10 @@ contract DeployDelphAICreate2 is Script {
         );
 
         vm.stopBroadcast();
+
+        console2.log("========================================");
+        console2.log("Deployed Address:", address(delphAI));
+        console2.log("========================================");
 
         // Verify the address matches prediction
         require(address(delphAI) == predictedAddress, "Address mismatch!");
@@ -83,8 +88,9 @@ contract DeployDelphAICreate2 is Script {
  */
 contract PredictDelphAIAddress is Script {
 
-    bytes32 constant SALT = keccak256("DelphAI-v1.0.0");
+    bytes32 constant SALT = keccak256("DelphAI-v1.1.0");
     uint256 constant DEFAULT_CREATION_FEE = 0.001 ether;
+    address constant CREATE2_DEPLOYER = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
 
     function run() external view {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -92,24 +98,23 @@ contract PredictDelphAIAddress is Script {
         address resolver = vm.envOr("RESOLVER_ADDRESS", vm.addr(deployerPrivateKey));
         uint256 creationFee = vm.envOr("CREATION_FEE", DEFAULT_CREATION_FEE);
 
-        address deployer = vm.addr(deployerPrivateKey);
-
         bytes32 initCodeHash = keccak256(abi.encodePacked(
             type(DelphAI).creationCode,
             abi.encode(owner, resolver, creationFee)
         ));
 
-        address predictedAddress = computeCreate2Address(SALT, initCodeHash, deployer);
+        address predictedAddress = computeCreate2Address(SALT, initCodeHash, CREATE2_DEPLOYER);
 
         console2.log("========================================");
         console2.log("DelphAI CREATE2 Address Prediction");
         console2.log("========================================");
-        console2.log("Deployer:", deployer);
         console2.log("Owner:", owner);
         console2.log("Resolver:", resolver);
+        console2.log("Creation Fee:", creationFee);
         console2.log("Salt:", vm.toString(SALT));
         console2.log("========================================");
         console2.log("Predicted Address:", predictedAddress);
+        console2.log("Create2Deployer:", CREATE2_DEPLOYER);
         console2.log("========================================");
         console2.log("");
         console2.log("This will be the address on ALL chains!");

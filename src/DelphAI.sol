@@ -121,6 +121,7 @@ contract DelphAI is Ownable, IDelphAI, IDelphAIEvents, DelphAIErrors {
         _markets[marketId].status = MarketLib.MarketStatus.Open;
         _markets[marketId].outcomeIndex = MarketLib.OUTCOME_NOT_RESOLVED;
         _markets[marketId].resolutionData = "";
+        _markets[marketId].resolutionConfidence = 0;
         _markets[marketId].proofData = "";
         _markets[marketId].resolvedAt = 0;
         _markets[marketId].resolvedBy = address(0);
@@ -143,6 +144,8 @@ contract DelphAI is Ownable, IDelphAI, IDelphAIEvents, DelphAIErrors {
         uint256 marketId,
         uint256 outcomeIndex,
         string memory resolutionData,
+        string[] memory resolutionSources,
+        uint8 resolutionConfidence,
         bytes memory proofData
     ) external onlyResolver marketExists(marketId) {
         MarketLib.Market storage market = _markets[marketId];
@@ -166,10 +169,17 @@ contract DelphAI is Ownable, IDelphAI, IDelphAIEvents, DelphAIErrors {
             revert Market_InvalidOutcomeIndex(outcomeIndex, market.possibleOutcomes.length);
         }
 
+        // Validate confidence level (0-100)
+        if (resolutionConfidence > 100) {
+            revert Market_InvalidConfidence(resolutionConfidence);
+        }
+
         // Resolve market
         market.status = MarketLib.MarketStatus.Resolved;
         market.outcomeIndex = outcomeIndex;
         market.resolutionData = resolutionData;
+        market.resolutionSources = resolutionSources;
+        market.resolutionConfidence = resolutionConfidence;
         market.proofData = proofData;
         market.resolvedAt = block.timestamp;
         market.resolvedBy = msg.sender;
@@ -180,6 +190,8 @@ contract DelphAI is Ownable, IDelphAI, IDelphAIEvents, DelphAIErrors {
             market.possibleOutcomes[outcomeIndex],
             msg.sender,
             resolutionData,
+            resolutionSources,
+            resolutionConfidence,
             proofData,
             block.timestamp
         );

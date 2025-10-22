@@ -33,6 +33,8 @@ contract DelphAITest is Test, DelphAIErrors {
         string outcome,
         address indexed resolver,
         string resolutionData,
+        string[] resolutionSources,
+        uint8 resolutionConfidence,
         bytes proofData,
         uint256 resolvedAt
     );
@@ -187,7 +189,9 @@ contract DelphAITest is Test, DelphAIErrors {
         vm.warp(block.timestamp + 1 days);
 
         vm.prank(resolver);
-        delphAI.resolveMarket(marketId, 0, "AI verified: It rained", "");
+        string[] memory sources = new string[](1);
+        sources[0] = "https://weather.com/data";
+        delphAI.resolveMarket(marketId, 0, "AI verified: It rained", sources, 95, "");
 
         MarketLib.Market memory market = delphAI.getMarket(marketId);
         assertTrue(market.status == MarketLib.MarketStatus.Resolved);
@@ -203,7 +207,8 @@ contract DelphAITest is Test, DelphAIErrors {
         vm.startPrank(user2);
         vm.expectRevert(Unauthorized_NotResolver.selector);
 
-        delphAI.resolveMarket(marketId, 0, "Data", "");
+        string[] memory sources = new string[](0);
+        delphAI.resolveMarket(marketId, 0, "Data", sources, 50, "");
 
         vm.stopPrank();
     }
@@ -222,7 +227,8 @@ contract DelphAITest is Test, DelphAIErrors {
             )
         );
 
-        delphAI.resolveMarket(marketId, 0, "Data", "");
+        string[] memory sources = new string[](0);
+        delphAI.resolveMarket(marketId, 0, "Data", sources, 50, "");
 
         vm.stopPrank();
     }
@@ -238,7 +244,8 @@ contract DelphAITest is Test, DelphAIErrors {
             abi.encodeWithSelector(Market_InvalidOutcomeIndex.selector, 5, 2)
         );
 
-        delphAI.resolveMarket(marketId, 5, "Data", "");
+        string[] memory sources = new string[](0);
+        delphAI.resolveMarket(marketId, 5, "Data", sources, 50, "");
 
         vm.stopPrank();
     }
@@ -349,7 +356,10 @@ contract DelphAITest is Test, DelphAIErrors {
         vm.warp(block.timestamp + 1 days);
 
         vm.prank(resolver);
-        delphAI.resolveMarket(marketId, 0, "BTC reached $105k", "");
+        string[] memory sources = new string[](2);
+        sources[0] = "https://coinmarketcap.com";
+        sources[1] = "https://coingecko.com";
+        delphAI.resolveMarket(marketId, 0, "BTC reached $105k", sources, 99, "");
 
         MarketLib.Market memory market = delphAI.getMarket(marketId);
         assertTrue(market.status == MarketLib.MarketStatus.Resolved);

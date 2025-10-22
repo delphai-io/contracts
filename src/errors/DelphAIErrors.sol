@@ -68,6 +68,10 @@ interface DelphAIErrors {
     /// @param maxIndex Maximum valid index (length - 1)
     error Market_InvalidOutcomeIndex(uint256 index, uint256 maxIndex);
 
+    /// @notice Thrown when resolution confidence is out of valid range (0-100)
+    /// @param confidence The provided confidence value
+    error Market_InvalidConfidence(uint8 confidence);
+
     // ============================================
     // Fee Errors
     // ============================================

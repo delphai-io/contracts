@@ -45,12 +45,16 @@ interface IDelphAI {
      * @param marketId The market to resolve
      * @param outcomeIndex Index of the outcome in possibleOutcomes array
      * @param resolutionData AI explanation/proof of resolution
+     * @param resolutionSources Array of source URLs used for resolution
+     * @param resolutionConfidence Confidence level of the resolution (0-100)
      * @param proofData TEE attestation or cryptographic proof
      */
     function resolveMarket(
         uint256 marketId,
         uint256 outcomeIndex,
         string memory resolutionData,
+        string[] memory resolutionSources,
+        uint8 resolutionConfidence,
         bytes memory proofData
     ) external;
 

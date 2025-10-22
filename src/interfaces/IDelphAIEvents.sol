@@ -50,6 +50,8 @@ interface IDelphAIEvents {
      * @param outcome The actual outcome string that was selected
      * @param resolver Address that resolved the market
      * @param resolutionData AI explanation/proof
+     * @param resolutionSources Array of source URLs used for resolution
+     * @param resolutionConfidence Confidence level of the resolution (0-100)
      * @param proofData TEE attestation or cryptographic proof
      * @param resolvedAt Block timestamp when resolved
      */
@@ -59,6 +61,8 @@ interface IDelphAIEvents {
         string outcome,
         address indexed resolver,
         string resolutionData,
+        string[] resolutionSources,
+        uint8 resolutionConfidence,
         bytes proofData,
         uint256 resolvedAt
     );
